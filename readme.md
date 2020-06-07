@@ -9,8 +9,8 @@
 * Serves files to port `8080`
 
 ##### Installing
-* Install dependencies `go get .`
+* Install dependencies `go get ./...`
 
 ##### Running
-* Build executable `go build`
+* Build executable `go build cmd/mifrogo.go`
 * Run the executable
