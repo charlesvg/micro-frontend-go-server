@@ -6,7 +6,6 @@
 ##### Features
 
 * Copies files from the `./web` directory to memory
-* Serves files to port `8080`
 * Supports configuration through `configs/application.yml`
 
 ##### Installing
