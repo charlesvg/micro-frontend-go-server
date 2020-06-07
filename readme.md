@@ -5,7 +5,7 @@
 
 ##### Features
 
-* Copies files from the /files directory in memory
+* Copies files from the `./files` directory to memory
 * Serves files to port `8080`
 
 ##### Installing
