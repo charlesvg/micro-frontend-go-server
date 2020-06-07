@@ -6,20 +6,19 @@ import (
 	"log"
 	"micro-frontend-go-server/internal"
 	"net/http"
+	"time"
 )
 
+const HttpPort = ":8080";
 
 func main() {
+	var memFs = afero.NewMemMapFs()
+	var httpFs = internal.NewFileSystemMapping(&memFs)
 
-	fmt.Println("app started")
-	var aferoMemFs = afero.NewMemMapFs()
-	var httpFs = internal.NewFileSystemMapping(&aferoMemFs)
+	start := time.Now()
+	var filesCopiedCount, _ = internal.CopyDir("./web", "/", &memFs)
+	fmt.Println("Copied", filesCopiedCount, "files to memory in ", time.Since(start))
 
-	var filesCopiedCount, _ = internal.CopyDir("./web", "/", &aferoMemFs)
-	fmt.Println("copied", filesCopiedCount, "web to memory" )
-
-	fmt.Println("serving web")
-	log.Fatal(http.ListenAndServe(":8080", http.FileServer(httpFs)))
-
-
+	fmt.Println("Server listening on port", HttpPort)
+	log.Fatal(http.ListenAndServe(HttpPort, http.FileServer(httpFs)))
 }
