@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"micro-frontend-go-server/internal"
 	"net/http"
 	"os"
 	"time"
-	log "github.com/sirupsen/logrus"
 )
 
 const HttpPort = ":8080"
+const contextPath = "/test/"
 
 func initlog() {
 	log.SetOutput(os.Stdout)
@@ -29,8 +30,9 @@ func main() {
 	filesCopiedCount, _ := internal.CopyDir("./web", "/", &memFs)
 	log.Println("Copied", filesCopiedCount, "files (",fmt.Sprintf("%.2f", DirSizeMB("/", &memFs)), "mb ) to memory in", time.Since(start))
 
-	log.Println("Server listening on port", HttpPort)
-	log.Fatal(http.ListenAndServe(HttpPort, customHeaders(http.FileServer(httpFs))))
+	log.Println("Server listening on port", HttpPort, "and context path", contextPath)
+	http.Handle(contextPath,  http.StripPrefix(contextPath, customHeaders(http.FileServer(httpFs))))
+	http.ListenAndServe(HttpPort, nil)
 }
 
 func customHeaders(next http.Handler) http.Handler {
