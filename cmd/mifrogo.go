@@ -10,18 +10,22 @@ import (
 	"time"
 )
 
-const HttpPort = ":8080"
-const contextPath = "/test/"
 
-func initlog() {
+func initlog(logLevel string) {
+	parsedLevel, err := log.ParseLevel(logLevel)
+	if err != nil {
+		log.Panicln(err)
+	}
 	log.SetOutput(os.Stdout)
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(parsedLevel)
 	log.SetFormatter(&log.TextFormatter{ ForceColors: true })
 }
 
 func main() {
 
-	initlog()
+	var config = internal.ReadConfig()
+
+	initlog(config.Log.Level)
 
 	var memFs = afero.NewMemMapFs()
 	var httpFs = internal.NewFileSystemMapping(&memFs)
@@ -30,9 +34,9 @@ func main() {
 	filesCopiedCount, _ := internal.CopyDir("./web", "/", &memFs)
 	log.Println("Copied", filesCopiedCount, "files (",fmt.Sprintf("%.2f", DirSizeMB("/", &memFs)), "mb ) to memory in", time.Since(start))
 
-	log.Println("Server listening on port", HttpPort, "and context path", contextPath)
-	http.Handle(contextPath,  http.StripPrefix(contextPath, customHeaders(http.FileServer(httpFs))))
-	http.ListenAndServe(HttpPort, nil)
+	log.Println("Server listening on port", config.Server.Port, "and context path", config.Server.ContextPath)
+	http.Handle(config.Server.ContextPath,  http.StripPrefix(config.Server.ContextPath, customHeaders(http.FileServer(httpFs))))
+	http.ListenAndServe(fmt.Sprintf(":%d", config.Server.Port ), nil)
 }
 
 func customHeaders(next http.Handler) http.Handler {
