@@ -22,11 +22,11 @@ func hello(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), internalError)
 	}
 }
-
-func main() {
-
-	fmt.Println("started")
-	http.HandleFunc("/hello", hello)
-	http.ListenAndServe(":8090", nil)
-
-}
+//
+//func main() {
+//
+//	fmt.Println("started")
+//	http.HandleFunc("/hello", hello)
+//	http.ListenAndServe(":8090", nil)
+//
+//}
