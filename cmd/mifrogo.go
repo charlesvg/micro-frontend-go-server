@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const HttpPort = ":8080";
+const HttpPort = ":8080"
 
 func main() {
 	var memFs = afero.NewMemMapFs()
