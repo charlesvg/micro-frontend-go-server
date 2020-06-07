@@ -17,9 +17,8 @@ func main() {
 	var httpFs = internal.NewFileSystemMapping(&memFs)
 
 	start := time.Now()
-	var filesCopiedCount, _ = internal.CopyDir("./web", "/", &memFs)
-	log.Println("Copied", filesCopiedCount, "files to memory in", time.Since(start))
-	log.Println("Size", fmt.Sprintf("%.2f", DirSizeMB("/", &memFs)), "mb")
+	filesCopiedCount, _ := internal.CopyDir("./web", "/", &memFs)
+	log.Println("Copied", filesCopiedCount, "files (",fmt.Sprintf("%.2f", DirSizeMB("/", &memFs)), "mb ) to memory in", time.Since(start))
 
 	log.Println("Server listening on port", HttpPort)
 	log.Fatal(http.ListenAndServe(HttpPort, customHeaders(http.FileServer(httpFs))))
@@ -27,6 +26,7 @@ func main() {
 
 func customHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer duration(track("Serving ", r.URL))
 		w.Header().Set("hello", "world")
 		next.ServeHTTP(w, r)
 	})
@@ -45,8 +45,15 @@ func DirSizeMB(path string, fs *afero.Fs) float64 {
 
 	afero.Walk(*fs, path, readSize)
 
-
 	sizeMB := float64(dirSize) / 1024.0 / 1024.0
 
 	return sizeMB
+}
+
+func track(msg ...interface{}) ( time.Time, string) {
+	return time.Now(), fmt.Sprint(msg...)
+}
+
+func duration(start time.Time, msg string ) {
+	log.Println(msg,"took", time.Since(start))
 }

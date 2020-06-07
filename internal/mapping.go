@@ -2,7 +2,6 @@ package internal
 
 import (
 	"github.com/spf13/afero"
-	"log"
 	"net/http"
 )
 
@@ -11,7 +10,6 @@ type Mapping struct {
 }
 
 func (m Mapping) Open(name string) (http.File, error) {
-	log.Println("open", name)
 	return m.fs.Open(name)
 }
 
