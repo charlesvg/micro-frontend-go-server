@@ -17,7 +17,7 @@ func main() {
 
 	start := time.Now()
 	var filesCopiedCount, _ = internal.CopyDir("./web", "/", &memFs)
-	fmt.Println("Copied", filesCopiedCount, "files to memory in ", time.Since(start))
+	fmt.Println("Copied", filesCopiedCount, "files to memory in", time.Since(start))
 
 	fmt.Println("Server listening on port", HttpPort)
 	log.Fatal(http.ListenAndServe(HttpPort, http.FileServer(httpFs)))
