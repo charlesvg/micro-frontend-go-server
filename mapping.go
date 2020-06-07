@@ -15,6 +15,6 @@ func (m Mapping) Open(name string) (http.File, error) {
 	return m.fs.Open(name)
 }
 
-func NewMapping(fs *afero.Fs) http.FileSystem {
+func NewFileSystemMapping(fs *afero.Fs) http.FileSystem {
 	return &Mapping{*fs}
 }
