@@ -3,16 +3,25 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/afero"
-	"log"
 	"micro-frontend-go-server/internal"
 	"net/http"
 	"os"
 	"time"
+	log "github.com/sirupsen/logrus"
 )
 
 const HttpPort = ":8080"
 
+func initlog() {
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.DebugLevel)
+	log.SetFormatter(&log.TextFormatter{ ForceColors: true })
+}
+
 func main() {
+
+	initlog()
+
 	var memFs = afero.NewMemMapFs()
 	var httpFs = internal.NewFileSystemMapping(&memFs)
 
