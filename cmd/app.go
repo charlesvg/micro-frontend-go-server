@@ -11,21 +11,13 @@ import (
 )
 
 
-func initlog(logLevel string) {
-	parsedLevel, err := log.ParseLevel(logLevel)
-	if err != nil {
-		log.Panicln(err)
-	}
-	log.SetOutput(os.Stdout)
-	log.SetLevel(parsedLevel)
-	log.SetFormatter(&log.TextFormatter{ ForceColors: true })
-}
+
 
 func main() {
 
-	var config = internal.ReadConfig()
+	var config = internal.ReadAppConfig()
 
-	initlog(config.Log.Level)
+	internal.Initlog(config.Log.Level)
 
 	var memFs = afero.NewMemMapFs()
 	var httpFs = internal.NewFileSystemMapping(&memFs)

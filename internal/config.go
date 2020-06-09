@@ -1,12 +1,14 @@
 package internal
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
+	"net/url"
 	"os"
 )
 
-type Config struct {
+type AppConfig struct {
 	Server struct {
 		Port int `yaml:"port"`
 		ContextPath string `yaml:"contextPath"`
@@ -16,19 +18,61 @@ type Config struct {
 	} `yaml:"log"`
 }
 
-func ReadConfig() Config {
-	const ConfigFileName = "./configs/application.yml"
-	f, err := os.Open(ConfigFileName)
+
+type ProxyConfig struct {
+	Server struct {
+		Port int `yaml:"port"`
+		DownStreamURL YAMLURL `yaml:"downStreamURL"`
+	} `yaml:"server"`
+	Log struct {
+		Level string `yaml:"level"`
+	} `yaml:"log"`
+}
+
+
+func ReadAppConfig() AppConfig {
+	f, err := os.Open(fmt.Sprintf("./configs/app.yml"))
 	if err != nil {
-		log.Panicln("Unable to read config file", ConfigFileName, err)
+		log.Panicln(err)
 	}
 	defer f.Close()
 
-	var cfg Config
+	var cfg = AppConfig{}
 	decoder := yaml.NewDecoder(f)
 	err = decoder.Decode(&cfg)
 	if err != nil {
-		log.Panicln("Invalid yml config file", ConfigFileName, err)
+		log.Panicln(err)
 	}
 	return cfg
+}
+
+func ReadProxyConfig() ProxyConfig {
+	f, err := os.Open(fmt.Sprintf("./configs/proxy.yml"))
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer f.Close()
+
+	var cfg = ProxyConfig{}
+	decoder := yaml.NewDecoder(f)
+	err = decoder.Decode(&cfg)
+	if err != nil {
+		log.Panicln(err)
+	}
+	return cfg
+}
+
+type YAMLURL struct {
+	*url.URL
+}
+
+func (j *YAMLURL) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var s string
+	err := unmarshal(&s)
+	if err != nil {
+		return err
+	}
+	url, err := url.Parse(s)
+	j.URL = url
+	return err
 }

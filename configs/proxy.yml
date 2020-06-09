@@ -1,0 +1,7 @@
+# Server configuration
+server:
+  port: 8090
+  downStreamURL: http://localhost:8080/bla/
+
+log:
+  level: "info"
